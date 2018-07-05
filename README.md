@@ -15,3 +15,6 @@
 
 #### 考生成绩列表
 ![考生成绩列表](https://github.com/weijieqiu/onlineSystem/blob/master/sqlAndImage/image/testStudentScore.png)
+
+#### 在线考试
+![在线考试](https://github.com/weijieqiu/onlineSystem/blob/master/sqlAndImage/image/mainTest.png)

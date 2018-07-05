@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+        "http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+    <constant name="struts.custom.i18n.resources" value="UTF-8"/>
+    <constant name="struts.devMode" value="true"/>
+    <constant name="struts.enable.DynamicMethodInvocation" value="false"/>
+
+    <package name="online_system" namespace="/" extends="struts-default">
+        <!-- ########################管理员模块########################-->
+        <!-- 管理员登录模块 -->
+        <action name="managerLogin" class="com.onlineSystem.demo.action.ManagerAction" method="login">
+            <result name="success">/main.jsp</result>
+            <result name="error">/login2.jsp</result>
+        </action>
+        
+        <!-- 管理员注销 -->
+        <action name="managerLogout" class="com.onlineSystem.demo.action.ManagerAction" method="logout">
+            <result name="success" type="redirect">/login2.jsp</result>
+        </action>
+
+        <!-- ########################学生模块########################-->
+        <!-- 学生登录模块 -->
+        <action name="studentLogin" class="com.onlineSystem.demo.action.StudentAction" method="login">
+            <result name="success">/main.jsp</result>
+            <result name="error">/login.jsp</result>
+        </action>
+
+        <!-- 学生注销 -->
+        <action name="studentLogout" class="com.onlineSystem.demo.action.StudentAction" method="logout">
+            <result name="success" type="redirect">/login.jsp</result>
+        </action>
+
+        <!-- 学生修改密码预处理模块 -->
+        <action name="studentPreUpdatePassword" class="com.onlineSystem.demo.action.StudentAction" method="preUpdatePassword">
+            <result name="success">/main.jsp</result>
+        </action>
+
+        <!-- 学生修改密码处理模块 -->
+        <action name="studentUpdatePassword" class="com.onlineSystem.demo.action.StudentAction" method="updatePassword">
+            <result name="success">/main.jsp</result>
+        </action>
+        <!-- 显示学生信息 -->
+        <action name="studentList" class="com.onlineSystem.demo.action.StudentAction" method="studentList">
+            <result name="success">/main.jsp</result>
+        </action>
+
+        <!-- 添加学生信息 -->
+        <action name="studentPreSave" class="com.onlineSystem.demo.action.StudentAction" method="studentPreSave">
+            <result name="success">/main.jsp</result>
+        </action>
+
+        <!-- 保存学生信息 -->
+        <action name="saveStudent" class="com.onlineSystem.demo.action.StudentAction" method="saveStudent">
+            <result name="success" type="redirectAction">studentList</result>
+        </action>
+
+
+        <!-- ########################试卷模块########################-->
+        <!-- 试卷管理模块 -->
+        <action name="paperPaperList" class="com.onlineSystem.demo.action.PaperAction" method="paperList">
+            <result name="success">/main.jsp</result>
+        </action>
+        <!-- 添加试卷预处理页面 -->
+        <action name="paperPreSave" class="com.onlineSystem.demo.action.PaperAction" method="paperPreSave">
+            <result name="success">/main.jsp</result>
+        </action>
+        <!-- 添加试卷处理页面 -->
+        <action name="paperSavePaper" class="com.onlineSystem.demo.action.PaperAction" method="paperSavePaper">
+            <result name="success" type="redirectAction">paperPaperList</result>
+        </action>
+        <!-- 删除试卷 -->
+        <action name="paperDelete" class="com.onlineSystem.demo.action.PaperAction" method="paperDelete">
+            <result name="success" type="redirectAction">paperPaperList</result>
+        </action>
+
+        <action name="stuPaperList" class="com.onlineSystem.demo.action.PaperAction" method="stuPaperList">
+            <result name="success">/main.jsp</result>
+        </action>
+
+        <action name="getDetailPaper" class="com.onlineSystem.demo.action.PaperAction" method="getDetailPaper">
+            <result name="success">/main.jsp</result>
+        </action>
+
+
+
+
+        <!-- ############题目管理############## -->
+        <action name="questionList" class="com.onlineSystem.demo.action.QuestionAction" method="questionList">
+            <result name="success">/main.jsp</result>
+        </action>
+        <action name="getQuestionById" class="com.onlineSystem.demo.action.QuestionAction" method="getQuestionById">
+            <result name="success">/main.jsp</result>
+        </action>
+        <!-- 修改试题预处理 -->
+        <action name="preSave" class="com.onlineSystem.demo.action.QuestionAction" method="preSave">
+            <result name="success">/main.jsp</result>
+        </action>
+        <action name="saveQuestion" class="com.onlineSystem.demo.action.QuestionAction" method="saveQuestion">
+            <result name="success" type="redirect">questionList</result>
+        </action>
+        <!-- 删除试题 -->
+        <action name="questionDelete" class="com.onlineSystem.demo.action.QuestionAction" method="questionDelete">
+            <result name="success" type="redirectAction">questionList</result>
+        </action>
+
+
+        <!-- 考试成绩管理 -->
+        <action name="addExam" class="com.onlineSystem.demo.action.ExamAction" method="addExam">
+            <result name="success">/main.jsp</result>
+        </action>
+
+        <action name="examList" class="com.onlineSystem.demo.action.ExamAction" method="examList">
+            <result name="success">/main.jsp</result>
+        </action>
+        <action name="getExams" class="com.onlineSystem.demo.action.ExamAction" method="getExams">
+            <result name="success">/main.jsp</result>
+        </action>
+    </package>
+</struts>

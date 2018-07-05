@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/tx
+	http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+
+    <!-- 定义数据源Bean，使用C3P0数据源实现，并注入数据源的必要信息 -->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+          destroy-method="close"
+          p:driverClass="com.mysql.jdbc.Driver"
+          p:jdbcUrl="jdbc:mysql://localhost/online_system"
+          p:user="root"
+          p:password=""
+          p:maxPoolSize="40"
+          p:minPoolSize="2"
+          p:initialPoolSize="2"
+          p:maxIdleTime="30"/>
+    <!-- 定义Hibernate的SessionFactory，SessionFactory需要依赖数据源，注入dataSource -->
+    <bean id="sessionFactory"
+          class="org.springframework.orm.hibernate4.LocalSessionFactoryBean"
+          p:dataSource-ref="dataSource">
+        <!-- annotatedClasses用来列出全部持久化类 -->
+        <property name="annotatedClasses">
+            <list>
+                <!-- 以下用来列出所有的PO类-->
+                <value>com.onlineSystem.demo.bean.Exam</value>
+                <value>com.onlineSystem.demo.bean.Manager</value>
+                <value>com.onlineSystem.demo.bean.PageBean</value>
+                <value>com.onlineSystem.demo.bean.Paper</value>
+                <value>com.onlineSystem.demo.bean.Question</value>
+                <value>com.onlineSystem.demo.bean.Student</value>
+            </list>
+        </property>
+        <!-- 定义Hibernate SessionFactory的属性 -->
+        <property name="hibernateProperties">
+            <props>
+                <!-- 指定Hibernate的连接方言 -->
+                <prop key="hibernate.dialect">
+                    org.hibernate.dialect.MySQL5InnoDBDialect
+                </prop>
+                <!--是否根据Hiberante映射创建数据表 -->
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.format_sql">true</prop>
+            </props>
+        </property>
+    </bean>
+
+
+    <!--<bean id="bookAction" class="com.onlineSystem.demo.action.BookAction" scope="prototype" p:bookService-ref="bookService"/>-->
+    <!--<bean id="bookService" class="com.onlineSystem.demo.service.impl.BookServiceImpl"-->
+        <!--p:bookDao-ref="bookDao"/>-->
+    <!--<bean id="bookDao" class="com.onlineSystem.demo.dao.impl.BookDaoHibernate4" p:sessionFactory-ref="sessionFactory"/>-->
+    <bean id="managerService" class="com.onlineSystem.demo.service.impl.ManagerServiceImpl" p:managerDao-ref="managerDao"/>
+    <bean id="managerDao" class="com.onlineSystem.demo.dao.impl.ManagerDaoImpl" p:sessionFactory-ref="sessionFactory"/>
+
+    <bean id="studentService" class="com.onlineSystem.demo.service.impl.StudentServiceImpl" p:studentDao-ref="studentDao"/>
+    <bean id="studentDao" class="com.onlineSystem.demo.dao.impl.StudentDaoImpl" p:sessionFactory-ref="sessionFactory"/>
+
+    <bean id="paperService" class="com.onlineSystem.demo.service.impl.PaperServiceImpl" p:paperDao-ref="paperDao"/>
+    <bean id="paperDao" class="com.onlineSystem.demo.dao.impl.PaperDaoImpl" p:sessionFactory-ref="sessionFactory"/>
+
+
+    <bean id="questionService" class="com.onlineSystem.demo.service.impl.QuestionServiceImpl" p:questionDao-ref="questionDao"/>
+    <bean id="questionDao" class="com.onlineSystem.demo.dao.impl.QuestionDaoImpl" p:sessionFactory-ref="sessionFactory"/>
+
+    <bean id="examService" class="com.onlineSystem.demo.service.impl.ExamServiceImpl" p:examDao-ref="examDao"/>
+    <bean id="examDao" class="com.onlineSystem.demo.dao.impl.ExamDaoImpl" p:sessionFactory-ref="sessionFactory"/>
+
+
+
+
+    <!-- 配置Hibernate的局部事务管理器，使用HibernateTransactionManager类 -->
+    <!-- 该类是PlatformTransactionManager接口针对采用Hibernate的特定实现类 -->
+    <!-- 配置HibernateTransactionManager需依赖注入SessionFactory -->
+    <bean id="transactionManager"
+          class="org.springframework.orm.hibernate4.HibernateTransactionManager"
+          p:sessionFactory-ref="sessionFactory"/>
+    <!-- 配置事务增强处理Bean,指定事务管理器 -->
+    <tx:advice id="txAdvice"
+               transaction-manager="transactionManager">
+        <!-- 用于配置详细的事务定义 -->
+        <tx:attributes>
+            <!-- 所有以'get'开头的方法是read-only的 -->
+            <tx:method name="get*" read-only="true"/>
+            <!-- 其他方法使用默认的事务设置，指定超时时长为5秒 -->
+            <tx:method name="*" isolation="DEFAULT"
+                       propagation="REQUIRED" timeout="5"/>
+        </tx:attributes>
+    </tx:advice>
+    <!-- AOP配置的元素 -->
+    <aop:config>
+        <!-- 配置一个切入点 -->
+        <aop:pointcut id="myPointcut" expression="bean(managerService) or bean(studentService) or bean(paperService) or bean(questionService) or bean(examService)"/>
+        <!-- 指定在myPointcut切入点应用txAdvice事务增强处理 -->
+        <aop:advisor advice-ref="txAdvice"
+                     pointcut-ref="myPointcut"/>
+    </aop:config>
+
+</beans>
